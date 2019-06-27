@@ -24,29 +24,6 @@ RUN apt-get update
 RUN apt-get install -y r-base
 RUN chown -R 1000 /usr/local/lib
 
-# prep nvidia environment
-COPY cuda-repo-ubuntu1804_10.0.130-1_amd64.deb libcudnn7_7.6.0.64-1+cuda10.0_amd64.deb /tmp/
-RUN add-apt-repository -y ppa:graphics-drivers
-RUN dpkg -i /tmp/cuda-repo-ubuntu1804_10.0.130-1_amd64.deb && \
-  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub && \
-  apt-get update
-# really ugly hack to make host and container nvidia versions the same
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cuda=10.0.130-1 \
-  nvidia-driver-418=418.56-0ubuntu0~gpu18.04.1 cuda-drivers=418.40.04-1 \
-  xserver-xorg-video-nvidia-418=418.56-0ubuntu0~gpu18.04.1 \
-  libnvidia-cfg1-418=418.56-0ubuntu0~gpu18.04.1 nvidia-dkms-418=418.56-0ubuntu0~gpu18.04.1 \
-  nvidia-utils-418=418.56-0ubuntu0~gpu18.04.1 nvidia-compute-utils-418=418.56-0ubuntu0~gpu18.04.1 \
-  nvidia-kernel-source-418=418.56-0ubuntu0~gpu18.04.1 libnvidia-gl-418=418.56-0ubuntu0~gpu18.04.1 \
-  libnvidia-compute-418=418.56-0ubuntu0~gpu18.04.1 libnvidia-decode-418=418.56-0ubuntu0~gpu18.04.1 \
-  libnvidia-encode-418=418.56-0ubuntu0~gpu18.04.1 libnvidia-ifr1-418=418.56-0ubuntu0~gpu18.04.1 \
-  libnvidia-fbc1-418=418.56-0ubuntu0~gpu18.04.1
-RUN dpkg -i /tmp/libcudnn7_7.6.0.64-1+cuda10.0_amd64.deb
-
-ENV NVIDIA_REQUIRE_CUDA "cuda>=10.0"
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES all
-#ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-
 # for permissions: create default user with UID 1000
 RUN useradd -u 1000 -d /home/$username -m -o $username
 
@@ -65,14 +42,14 @@ RUN . ~/.profile && Rscript /tmp/r-kernel.R
 
 # install ML and related packages
 RUN . ~/.profile && pip install --upgrade --user \
-  nltk requests keras azure sklearn sklearn.utils tensorflow-gpu seaborn statsmodels cntk cntk-gpu
+  nltk requests keras azure sklearn sklearn.utils tensorflow seaborn statsmodels cntk
 RUN . ~/.profile && pip install --upgrade --user \
   cognitive_face azure-cognitiveservices-vision-customvision azureml.core \
   azureml.train azureml.train.automl azureml.widgets
 
-RUN . ~/.profile && pip install --upgrade --user \
-  aiohttp botbuilder-ai botbuilder-applicationinsights botbuilder-azure \
-  botbuilder-core botbuilder-dialogs botbuilder-schema botframework-connector
+#RUN . ~/.profile && pip install --upgrade --user \
+#  aiohttp botbuilder-ai botbuilder-applicationinsights botbuilder-azure \
+#  botbuilder-core botbuilder-dialogs botbuilder-schema botframework-connector
 
 COPY jupyter_notebook_config.py /home/$username/.jupyter/jupyter_notebook_config.py
 
