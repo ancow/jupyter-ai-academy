@@ -1,0 +1,3 @@
+#deb http://cran.rstudio.com/bin/linux/ubuntu cosmic-cran35/
+#deb http://cran.rstudio.com/bin/linux/ubuntu disco-cran35/
+deb http://cran.rstudio.com/bin/linux/ubuntu bionic-cran35/
