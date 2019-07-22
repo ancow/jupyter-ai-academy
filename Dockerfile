@@ -7,7 +7,8 @@ ENV configured_user=$username
 # get current package list and update
 RUN apt-get update && apt-get upgrade -y
 # install base/nice-to-have packages
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata less mc aptitude bash-completion lsb-release locales software-properties-common # dialog
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata less mc aptitude bash-completion lsb-release \
+  locales software-properties-common git # dialog
 # install python and jupyter deps (& hack to fix CNTK deps)
 RUN apt-get install -y python3 python3-pip openmpi-bin curl && \
   ln -s /usr/lib/x86_64-linux-gnu/libmpi_cxx.so.20 /usr/lib/x86_64-linux-gnu/libmpi_cxx.so.1 && \
